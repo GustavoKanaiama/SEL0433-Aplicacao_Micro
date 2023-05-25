@@ -74,7 +74,7 @@ void INTERRUPCAO_botao_1s() iv 0x0018 ics ICS_AUTO { // alta prioridade
    {
      INTCON.INT0IF = 0;     //  zera flag
 
-     PORTD.RD0 ^= 1;   //Faz a operacao de incremento do 7segmentos
+     ConfigTIMER0();
    }
 }       // Fim do atendimento � interrup��o
 
@@ -89,7 +89,7 @@ void INTERRUPCAO_botao_250ms() iv 0x0008 ics ICS_AUTO { //baixa prioridade
    {
      INTCON.INT0IF = 0;     //  zera flag
 
-     PORTD.RD0 ^= 1;   //Faz a operacao de incremento do 7segmentos
+     ConfigTIMER1();
    }
 }       // Fim do atendimento � interrup��o
 
