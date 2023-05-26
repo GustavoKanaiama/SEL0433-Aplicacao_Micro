@@ -1,8 +1,6 @@
 
 int num_bcd = 0; //numero apresentado pelo 7segmentos iniciado em 0
 
-void main() {
-
 void ConfigMCU(){
 
 #ifdef P18F45K22
@@ -30,9 +28,9 @@ void ConfigMCU(){
 
 
  PORTD.RD0 = 0;      //LEDs inicialmente apagados
- PORTD.RD1 = 0; 
- PORTD.RD2 = 0; 
- PORTD.RD3 = 0; 
+ PORTD.RD1 = 0;
+ PORTD.RD2 = 0;
+ PORTD.RD3 = 0;
 
 }
 
@@ -46,7 +44,7 @@ void ConfigTIMER0(){
   INTCON.TMR0IF = 0;  //zera o Flag
   T0CON.TMR0ON = 1;   //Liga o TIMER0
 
-  T1CON.TMR1ON = 0  //Desliga o TIMER1
+  T1CON.TMR1ON = 0;  //Desliga o TIMER1
 }
 
 void ConfigTIMER1(){
@@ -54,14 +52,14 @@ void ConfigTIMER1(){
 // ja que o max do TIMER1 é aprx 262ms
 //pre scaler de 8
 
-  T1CON = 0B10110001; 
+  T1CON = 0B10110001;
   TMR1H = 0X0B;   // carga do valor inicial
   TMR1L = 0XDC;
 
   PIR1.TMR1IF = 0;  //zera o Flag
   T1CON.TMR1ON = 1;   //Liga o TIMER1
 
-  T0CON.TMR0ON = 0  //Desliga o TIMER0
+  T0CON.TMR0ON = 0;  //Desliga o TIMER0
 }
 
 void INTERRUPCAO_botao_1s() iv 0x0018 ics ICS_AUTO { // alta prioridade
@@ -76,8 +74,7 @@ void INTERRUPCAO_botao_1s() iv 0x0018 ics ICS_AUTO { // alta prioridade
 
      ConfigTIMER0();
    }
-}       // Fim do atendimento � interrup��o
-
+}       // Fim do atendimento ? interrup??o
 
 void INTERRUPCAO_botao_250ms() iv 0x0008 ics ICS_AUTO { //baixa prioridade
 
@@ -91,9 +88,11 @@ void INTERRUPCAO_botao_250ms() iv 0x0008 ics ICS_AUTO { //baixa prioridade
 
      ConfigTIMER1();
    }
-}       // Fim do atendimento � interrup��o
+}       // Fim do atendimento ? interrup??o
 
+void main() {
 
+    ConfigMCU();
 
     while(1){
 
