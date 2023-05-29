@@ -1,0 +1,9 @@
+main
+	__CC2DW
+	ConfigMCU
+	ConfigTIMER1
+	ConfigTIMER0
+INTERRUPCAO_botao_1s
+	ConfigTIMER0
+INTERRUPCAO_botao_250ms
+	ConfigTIMER1
