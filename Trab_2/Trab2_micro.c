@@ -31,7 +31,17 @@ void ConfigMCU(){
  PORTD.RD1 = 0;
  PORTD.RD2 = 0;
  PORTD.RD3 = 0;
+ 
 
+ INTCON.GIEH = 1;     // Alta prioridade       ex.: INT1
+
+ INTCON.INT0IF = 0; //Clear flags
+ INTCON.INT1IF = 0;
+
+ INTCON.INT0IE = 1; //Habilita a interrup��o INT0/RB0
+ INTCON.INT1IE = 1; //Habilita a interrup��o INT1/RB1
+ INTCON2.INTEDG0 = 1; //borda de subida no RB0 e RB1
+ INTCON2.INTEDG1 = 1;
 }
 
 void ConfigTIMER0(){
@@ -62,32 +72,26 @@ void ConfigTIMER1(){
   T0CON.TMR0ON = 0;  //Desliga o TIMER0
 }
 
-void INTERRUPCAO_botao_1s() iv 0x0018 ics ICS_AUTO { // alta prioridade
+void Interrupt_botao_1s() iv 0x0008 ics ICS_AUTO { // baixa prioridade
 
 // tratamento - acionar LED
 
-  num_bcd = 0; //zerar o numero do 7segmentos
+  num_bcd = 1; //zerar o numero do 7segmentos
 
-  if(INTCON.INT0IF == 1)
-   {
-     INTCON.INT0IF = 0;     //  zera flag
+  INTCON.INT1IF = 0;     //  zera flag
 
-     ConfigTIMER0();
-   }
+  //ConfigTIMER0();
+
 }       // Fim do atendimento ? interrup??o
 
-void INTERRUPCAO_botao_250ms() iv 0x0008 ics ICS_AUTO { //baixa prioridade
+void Interrupt_botao_250ms() iv 0x0008 ics ICS_AUTO { //baixa prioridade
 
 // tratamento - acionar LED
-  num_bcd = 0; //zerar o numero do 7segmentos
+  num_bcd = 2; //zerar o numero do 7segmentos
 
+  INTCON.INT0IF = 0;     //  zera flag
 
-  if(INTCON.INT0IF == 1)
-   {
-     INTCON.INT0IF = 0;     //  zera flag
-
-     ConfigTIMER1();
-   }
+  //ConfigTIMER1();
 }       // Fim do atendimento ? interrup??o
 
 void main() {
