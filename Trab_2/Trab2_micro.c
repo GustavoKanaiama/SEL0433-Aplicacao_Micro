@@ -19,7 +19,7 @@ void ConfigMCU(){
 
  TRISB.RB0 = 1;      //pino RB0 como entrada (botao)
  TRISB.RB1 = 1;      //pino RB1 como entrada (botao)
-
+ TRISB.RB2 = 1;
 
  TRISD.RD0 = 0;      //pino RD0 como saida
  TRISD.RD1 = 0;
@@ -31,17 +31,24 @@ void ConfigMCU(){
  PORTD.RD1 = 0;
  PORTD.RD2 = 0;
  PORTD.RD3 = 0;
+
+ RCON.IPEN = 1; //DOIS NIVEIS DE PRIORIDADE HABILITADOS
+ INTCON.GIEL = 1;// interrupt prioridade baixa habilitada
+ INTCON.GIEH = 1;// interrupt prioridade alta habilitada
+
+
+ INTCON2.TMR0IP = 0; // prioridade baixa para os timers
+ IPR1.TMR1IP = 0;
  
+ INTCON3.INT1IF = 0; //Clear flags
+ INTCON3.INT2IF = 0;
 
- INTCON.GIEH = 1;     // Alta prioridade       ex.: INT1
+ INTCON3.INT1IE = 1; //Habilita a interrup��o INT1/RB1
+ INTCON3.INT2IE = 1; //Habilita a interrup��o INT2/RB2
 
- INTCON.INT0IF = 0; //Clear flags
- INTCON.INT1IF = 0;
 
- INTCON.INT0IE = 1; //Habilita a interrup��o INT0/RB0
- INTCON.INT1IE = 1; //Habilita a interrup��o INT1/RB1
- INTCON2.INTEDG0 = 1; //borda de subida no RB0 e RB1
- INTCON2.INTEDG1 = 1;
+ INTCON2.INTEDG1 = 1; //borda de subida no RB1 e RB2
+ INTCON2.INTEDG2 = 1;
 }
 
 void ConfigTIMER0(){
@@ -72,27 +79,26 @@ void ConfigTIMER1(){
   T0CON.TMR0ON = 0;  //Desliga o TIMER0
 }
 
-void Interrupt_botao_1s() iv 0x0008 ics ICS_AUTO { // baixa prioridade
 
-// tratamento - acionar LED
+void Interrupt_botao() iv 0x0018 ics ICS_AUTO { //alta prioridade
 
-  num_bcd = 1; //zerar o numero do 7segmentos
+  num_bcd = 0; //zerar o numero do 7segmentos
 
-  INTCON.INT1IF = 0;     //  zera flag
+  // tratamento botao 250ms
+  if (INTCON3.INT2IF == 1){  //Interrupt 1s acionada
 
-  //ConfigTIMER0();
+    INTCON3.INT2IF = 0; //zera flag
+    ConfigTIMER0();
+  }
 
-}       // Fim do atendimento ? interrup??o
+  if (INTCON3.INT1IF == 1){  //Interrupt 250ms acionada
 
-void Interrupt_botao_250ms() iv 0x0008 ics ICS_AUTO { //baixa prioridade
+    INTCON3.INT1IF = 0; //zera flag
+    ConfigTIMER1(); //aciona Timer
+  }
+  
 
-// tratamento - acionar LED
-  num_bcd = 2; //zerar o numero do 7segmentos
-
-  INTCON.INT0IF = 0;     //  zera flag
-
-  //ConfigTIMER1();
-}       // Fim do atendimento ? interrup??o
+}       // Fim do atendimento da interrupcao
 
 void main() {
 
@@ -119,16 +125,16 @@ void main() {
 
       switch (num_bcd) { //0b0000_RD3_RD2_RD1_RD0
 
-      case 0:{  PORTD = 0b00000000; break; }
-      case 1:{  PORTD = 0b00000001; break; }
-      case 2:{  PORTD = 0b00000010; break; }
-      case 3:{  PORTD = 0b00000011; break; }
-      case 4:{  PORTD = 0b00000100; break; }
-      case 5:{  PORTD = 0b00000101; break; }
-      case 6:{  PORTD = 0b00000110; break; }
-      case 7:{  PORTD = 0b00000111; break; }
-      case 8:{  PORTD = 0b00001000; break; }
-      case 9:{  PORTD = 0b00001001; break; }
+      case 0:{  PORTD = 0b1111110; break; }
+      case 1:{  PORTD = 0b0110000; break; }
+      case 2:{  PORTD = 0b1101101; break; }
+      case 3:{  PORTD = 0b1111001; break; }
+      case 4:{  PORTD = 0b0110011; break; }
+      case 5:{  PORTD = 0b1011011; break; }
+      case 6:{  PORTD = 0b1011111; break; }
+      case 7:{  PORTD = 0b1110000; break; }
+      case 8:{  PORTD = 0b1111111; break; }
+      case 9:{  PORTD = 0b1111011; break; }
       }
 
     };
