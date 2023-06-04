@@ -1,0 +1,12 @@
+0	1	mikroCPIC1618.exe -MSF -DBG -pP18F4550 -DL -O11111114 -fo32 -PRG1 -N"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Examples\Development Systems\EasyPIC v8\Led Blinking\LedBlinking.mcppi" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\uses\P18\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Examples\Development Systems\EasyPIC v8\Led Blinking\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\uses\P18\" "LedBlinking.c" "__Lib_Math.mcl" "__Lib_MathDouble.mcl" "__Lib_System.mcl" "__Lib_Delays.mcl"	 
+hint: 0	1139	Available RAM: 2027 [bytes], Available ROM: 32768 [bytes]	 
+diagnostics: 0	122	Compilation Started	LedBlinking.c
+hint: 0	1004	interrupt handler (Interrupt_botao at 0x0018)	LedBlinking.c
+diagnostics: 141	123	Compiled Successfully	LedBlinking.c
+diagnostics: 0	127	All files Compiled in 47 ms	 
+hint: 0	1144	Used RAM (bytes): 5 (1%)  Free RAM (bytes): 2022 (99%)	Used RAM (bytes): 5 (1%)  Free RAM (bytes): 2022 (99%)
+hint: 0	1144	Used ROM (bytes): 442 (1%)  Free ROM (bytes): 32326 (99%)	Used ROM (bytes): 442 (1%)  Free ROM (bytes): 32326 (99%)
+diagnostics: 0	125	Project Linked Successfully	LedBlinking.mcppi
+diagnostics: 0	128	Linked in 16 ms	 
+diagnostics: 0	129	Project 'LedBlinking.mcppi' completed: 219 ms	 
+diagnostics: 0	103	Finished successfully: 03 jun 2023, 23:56:19	LedBlinking.mcppi

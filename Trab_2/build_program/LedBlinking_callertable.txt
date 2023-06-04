@@ -3,7 +3,6 @@ main
 	ConfigMCU
 	ConfigTIMER1
 	ConfigTIMER0
-INTERRUPCAO_botao_1s
+Interrupt_botao
 	ConfigTIMER0
-INTERRUPCAO_botao_250ms
 	ConfigTIMER1
