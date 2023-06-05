@@ -80,7 +80,7 @@ void ConfigTIMER1(){
 }
 
 
-void Interrupt_botao() iv 0x0018 ics ICS_AUTO { //alta prioridade
+void Interrupt_botao() iv 0x0018 ics ICS_AUTO { //baixa prioridade
 
   num_bcd = 0; //zerar o numero do 7segmentos
 
@@ -111,7 +111,10 @@ void main() {
         if(num_bcd >= 9){
           num_bcd = 0;
         }
-        num_bcd += 1;
+        else{
+          num_bcd += 1;
+        }
+        
         ConfigTIMER1(); // Recarrega o TIMER1
       }
 
@@ -119,7 +122,10 @@ void main() {
         if(num_bcd >= 9){
           num_bcd = 0;
         }
-        num_bcd += 1;
+        else{
+          num_bcd += 1;
+        }
+        
         ConfigTIMER0(); // Recarrega o TIMER0
       }
 
