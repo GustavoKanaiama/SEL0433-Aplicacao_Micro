@@ -1,5 +1,8 @@
 
 int num_bcd = 0; //numero apresentado pelo 7segmentos iniciado em 0
+int last_button = 0; //   0 -> nenuhm botao foi pressionado (ao reiniciar)
+                     //   1 -> botao 1s
+                     //   2 -> botao 250ms
 
 void ConfigMCU(){
 
@@ -14,7 +17,6 @@ void ConfigMCU(){
  PORTD = 0;
 
  INTCON.TMR0IF = 0; //Flag TIMER0 zerada
- PIR1.TMR1IF = 0;  //zera a Flag TIMER1
 
 
  TRISB.RB0 = 1;      //pino RB0 como entrada (botao)
@@ -38,7 +40,6 @@ void ConfigMCU(){
 
 
  INTCON2.TMR0IP = 0; // prioridade baixa para os timers
- IPR1.TMR1IP = 0;
  
  INTCON3.INT1IF = 0; //Clear flags
  INTCON3.INT2IF = 0;
@@ -51,7 +52,7 @@ void ConfigMCU(){
  INTCON2.INTEDG2 = 1;
 }
 
-void ConfigTIMER0(){
+void Config_1s(){
 //*******************TIMER0 PARA 1s*********************************
 
   T0CON = 0B00000100;  //TIMER_OFF, MOD_16BITS, TIMER, PRES_1:32
@@ -61,40 +62,38 @@ void ConfigTIMER0(){
   INTCON.TMR0IF = 0;  //zera o Flag
   T0CON.TMR0ON = 1;   //Liga o TIMER0
 
-  T1CON.TMR1ON = 0;  //Desliga o TIMER1
 }
+//C2F7
+void Config_250ms(){
+//*******************TIMER0 PARA 250ms*********************************
 
-void ConfigTIMER1(){
-//*******************TIMER1 PARA 250ms*********************************
-// ja que o max do TIMER1 é aprx 262ms
-//pre scaler de 8
 
-  T1CON = 0B10110001;
-  TMR1H = 0X0B;   // carga do valor inicial
-  TMR1L = 0XDC;
+  T0CON = 0B00000100; //TIMER_OFF, MOD_16BITS, TIMER, PRES_1:32
+  TMR0H = 0XC2;   // carga do valor inicial
+  TMR0L = 0XF7;
 
-  PIR1.TMR1IF = 0;  //zera o Flag
-  T1CON.TMR1ON = 1;   //Liga o TIMER1
-
-  T0CON.TMR0ON = 0;  //Desliga o TIMER0
+  INTCON.TMR0IF = 0;  //zera o Flag
+  T0CON.TMR0ON = 1;   //Liga o TIMER0
 }
 
 
 void Interrupt_botao() iv 0x0018 ics ICS_AUTO { //baixa prioridade
-
+  delay(70);
   num_bcd = 0; //zerar o numero do 7segmentos
 
-  // tratamento botao 250ms
+  // tratamento botao
   if (INTCON3.INT2IF == 1){  //Interrupt 1s acionada
+    last_button = 1; //botao 1s pressionado
 
     INTCON3.INT2IF = 0; //zera flag
-    ConfigTIMER0();
+    Config_1s();
   }
 
   if (INTCON3.INT1IF == 1){  //Interrupt 250ms acionada
+    last_button = 2; //botao 250ms pressionado
 
     INTCON3.INT1IF = 0; //zera flag
-    ConfigTIMER1(); //aciona Timer
+    Config_250ms(); //aciona Timer
   }
   
 
@@ -106,19 +105,9 @@ void main() {
 
     while(1){
 
-      if(PIR1.TMR1IF == 1){
-        //Tratamento para interrupt do TIMER1
-        if(num_bcd >= 9){
-          num_bcd = 0;
-        }
-        else{
-          num_bcd += 1;
-        }
-        
-        ConfigTIMER1(); // Recarrega o TIMER1
-      }
 
       if(INTCON.TMR0IF == 1){
+        //tratamento para não exceder o valor de 9 no bcd
         if(num_bcd >= 9){
           num_bcd = 0;
         }
@@ -126,8 +115,15 @@ void main() {
           num_bcd += 1;
         }
         
-        ConfigTIMER0(); // Recarrega o TIMER0
+        //rastreamento para recarregar o TIMER0
+        if( last_button == 1){
+          Config_1s();
+        }
+        else{
+          Config_250ms();
+        }
       }
+
 
       switch (num_bcd) { //0b0000_RD3_RD2_RD1_RD0
 
