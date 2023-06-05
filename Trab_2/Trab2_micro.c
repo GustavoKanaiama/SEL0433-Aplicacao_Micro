@@ -78,7 +78,7 @@ void Config_250ms(){
 
 
 void Interrupt_botao() iv 0x0018 ics ICS_AUTO { //baixa prioridade
-  delay(70);
+  delay_ms(70);
   num_bcd = 0; //zerar o numero do 7segmentos
 
   // tratamento botao
