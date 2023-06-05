@@ -39,7 +39,7 @@ void ConfigMCU(){
  INTCON.GIEH = 1;// interrupt prioridade alta habilitada
 
 
- INTCON2.TMR0IP = 0; // prioridade baixa para os timers
+ INTCON2.TMR0IP = 0; // prioridade baixa para o timer
  
  INTCON3.INT1IF = 0; //Clear flags
  INTCON3.INT2IF = 0;
@@ -79,7 +79,6 @@ void Config_250ms(){
 
 void Interrupt_botao() iv 0x0018 ics ICS_AUTO { //baixa prioridade
   delay_ms(70);
-  num_bcd = 0; //zerar o numero do 7segmentos
 
   // tratamento botao
   if (INTCON3.INT2IF == 1){  //Interrupt 1s acionada
