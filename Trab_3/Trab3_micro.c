@@ -55,15 +55,17 @@ void main(){
 
 #ifdef P18F45K22 // Lembrando que ANSEL = 1; pois agora o pino deve ser analogico!!!
 
-  TRISA.RA0 = 1;// AN0/RA0 como entrada (canal escolhido para leitura anal�gica)
-  TRISA.RA1 = 1;
-  ANSELA = 0X11;// ou 0B00000011; (somente AN0/RA0 E AN1 como anal�gico)
+  TRISA.RA2 = 1; // AN2/RA2 como entrada (canal escolhido para leitura anal�gica)
+  TRISA.RA3 = 1; // AN3/RA3 como entrada (canal escolhido para leitura anal�gica)
+  ANSELA = 0B00000111;// (somente AN0/RA0 E AN1 como anal�gico)
   ANSELB = 0;  // Configura PORTB como digital (n�o vai usar o m�dulo anal�gico)
+  ADC_Init_Advanced(_ADC_INTERNAL_VREFL_ | _ADC_INTERNAL_FVRH1); // Mudar a Referencia para Vref+ 1V
 
 #else     // caso usar outro modelo de PIC18F
-  TRISA.RA0 = 1;
-  TRISA.RA1 = 1;
-  ADCON1 = 0B00001101; //Configura RA0/AN0 e AN1 como ADC no PIC18F4450
+  TRISA.RA2 = 1;
+  TRISA.RA3 = 1;
+  ADCON1 = 0B00001011; //Configura RA0/AN0 e AN1 como ADC no PIC18F4450
+  ADC_Init();
 #endif
 
  // Configura��o do m�dulo LCD
@@ -71,16 +73,13 @@ void main(){
   Lcd_Cmd(_LCD_CLEAR);       // Clear display
   Lcd_Cmd(_LCD_CURSOR_OFF);  // Cursor off
   Lcd_Out(1, 6, " V         ");
-  Lcd_Out(2, 6, " C         " );
-
-  ADC_Init();  // uso da fun��o da biblioteca ADC do pr�prio compilador
-  //- incializa o m�dulo ADC
+  Lcd_Out(2, 6, " C         ");
 
  while(TRUE)
   {
 
-    V_ADC = ADC_Read(0); // fun��o da biblioteca ADC do compilador para
-    T_ADC = ADC_Read(1); //leitura dos valores de 0 a 1023 (10 bits)  - ex.:  valor_ADC = 1023;
+    V_ADC = ADC_Read(2); // fun��o da biblioteca ADC do compilador para
+    T_ADC = ADC_Read(3); //leitura dos valores de 0 a 1023 (10 bits)  - ex.:  valor_ADC = 1023;
 
 
     // Ajustes de escala dos valores de convers�o para colocar no formato float
