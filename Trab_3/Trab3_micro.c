@@ -46,58 +46,67 @@ sbit LCD_D7_Direction at TRISB3_bit;
 /*Programa Principal*/
 
 void main(){
-  unsigned int Valor_ADC = 0;  // var. para leitura
+  unsigned int V_ADC = 0;  // var. para leitura da Tensao
+  unsigned int T_ADC = 0;  // var. para leitura da Temperatura
+  int V_max = 500; // 5.00 V
+  int T_max = 999; // 99.9 ºC
   unsigned char Tensao[10];    // arranjo textual para exibir no display
+  unsigned char Temp[10];  //vetor do valor da temperatura
 
 #ifdef P18F45K22 // Lembrando que ANSEL = 1; pois agora o pino deve ser analogico!!!
 
   TRISA.RA0 = 1;// AN0/RA0 como entrada (canal escolhido para leitura anal�gica)
-  ANSELA = 0X01;// ou 0B00000001; (somente AN0/RA0 como anal�gico)
+  TRISA.RA1 = 1;
+  ANSELA = 0X11;// ou 0B00000011; (somente AN0/RA0 E AN1 como anal�gico)
   ANSELB = 0;  // Configura PORTB como digital (n�o vai usar o m�dulo anal�gico)
 
 #else     // caso usar outro modelo de PIC18F
   TRISA.RA0 = 1;
-  ADCON1 = 0B00001110; //Configura RA0/AN0 como ADC no PIC18F4450
+  TRISA.RA1 = 1;
+  ADCON1 = 0B00001101; //Configura RA0/AN0 e AN1 como ADC no PIC18F4450
 #endif
 
  // Configura��o do m�dulo LCD
   Lcd_Init();                 // Inicializa a lib. Lcd
   Lcd_Cmd(_LCD_CLEAR);       // Clear display
   Lcd_Cmd(_LCD_CURSOR_OFF);  // Cursor off
-  Lcd_Out(1,1,"ADC0:");   //Escreve na Linha x Coluna do LCD o texto(valor do ADC)
+  Lcd_Out(1, 6, " V         ");
+  Lcd_Out(2, 6, " C         " );
 
   ADC_Init();  // uso da fun��o da biblioteca ADC do pr�prio compilador
   //- incializa o m�dulo ADC
 
  while(TRUE)
   {
-    Valor_ADC = ADC_Read(0); // fun��o da biblioteca ADC do compilador para
-    //leitura dos valores de 0 a 1023 (10 bits)  - ex.:  valor_ADC = 1023;
+
+    V_ADC = ADC_Read(0); // fun��o da biblioteca ADC do compilador para
+    T_ADC = ADC_Read(1); //leitura dos valores de 0 a 1023 (10 bits)  - ex.:  valor_ADC = 1023;
 
 
     // Ajustes de escala dos valores de convers�o para colocar no formato float
     // de 2 casas ap�s a virgula. Tomando como exemplo valores de 0 a 12.34 para
     // a escala de 0 a 1023 do conversor:
 
-    Valor_ADC = Valor_ADC * (1234/1023.); // formata o valor de entrada (neste caso o valor de exemplo '1234')
-    // para 0 a 1023 -> com ponto no final para n� float,i.e.,o display mostrar�: '12.34'
+
+
+    V_ADC = V_ADC * (V_max/1023.); // formata o valor de entrada (neste caso o valor de exemplo '1234')
+    T_ADC = T_ADC * (T_max/1023.); // para 0 a 1023 -> com ponto no final para n� float,i.e.,o display mostrar�: '12.34'
+
+    // ------------Formatando para Tensao ------------------
 
     // Formatando cada valor a ser exibido no display como "12.34"
-    Tensao[0] = (Valor_ADC/1000) + '0';// div. de 2 n� inteiros - em programa��o
-    // resulta na parte inteira do primeiro n� (ex.: 1234/1000 = 1)
-    // E '1' + '0'  = 1; ou seja,  converte o valor para ASCI  para exibir no display
 
-    Tensao[1] = (Valor_ADC/100)%10 + '0'; // div. de n� inteiros => 1234/100 = 12
+    Tensao[0] = (V_ADC/100)%10 + '0'; // div. de n� inteiros => 1234/100 = 12
     // '%' em ling. C � opera��o "mod"  c/ resto da divis�o, ou seja, 12%10 = 2
     // portanto, formata o segundo n� no display no padr�o ASCI ( '2' + '0' = 2)
 
-    Tensao[2] = '.';    //3� valor corresponde ao ponto - ex. 12.34
+    Tensao[1] = '.';    //3� valor corresponde ao ponto - ex. 12.34
 
-    Tensao[3] = (Valor_ADC/10)%10 + '0'; // 4� valor � a 1�casa decimal, portanto:
+    Tensao[2] = (V_ADC/10)%10 + '0'; // 4� valor � a 1�casa decimal, portanto:
     // 1234/10 = 123%10 = 3  - formata no padr�o ASCI
-    Tensao[4] = (Valor_ADC/1)%10 + '0';  // formata o valor da 2� casa decimal
+    Tensao[3] = (V_ADC/1)%10 + '0';  // formata o valor da 2� casa decimal
 
-    Tensao[5] = 0; //terminador NULL (ultima posi��o da matriz - zero indica o
+    Tensao[4] = 0; //terminador NULL (ultima posi��o da matriz - zero indica o
     //final opea��o e limita a exibi��o dos 5 valores anteriores: 12.34), ou seja
     // a partir daqui, n�o ser�o mais exibidos valores, os quais poder�o ser
     //adicionados caso se deseja exibir, por ex., mais casas decimais
@@ -105,11 +114,18 @@ void main(){
     //floatToStr(Valor_ADC , Tensao);
     //Tensao[5] = 0;
 
+    // ------------Formatando para Temperatura ------------------
+
+    Temp[0] = (T_ADC/100)%10 + '0';
+    Temp[1] = (T_ADC/10)%10 + '0';
+    Temp[2] = '.';
+    Temp[3] = (T_ADC/1)%10 + '0';
+    Temp[4] = 0;
+
 
      // Exibir os valores na config. acima no display LCD:
-    Lcd_Out(1,6,Tensao); // Mostra os valores no display
-    Lcd_Out(1, 7, " V");
-    Lcd_Out(2, 1, "Teste");
+    Lcd_Out(1, 1, Tensao); // Mostra os valores no display
+    Lcd_Out(2, 1, Temp);
     Delay_ms(20);   // atualizar display
   }
 }

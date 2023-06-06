@@ -78,7 +78,7 @@ void Config_250ms(){
 
 
 void Interrupt_botao() iv 0x0018 ics ICS_AUTO { //baixa prioridade
-  delay_ms(70);
+  delay_ms(70); //Tratamento do debounce
 
   // tratamento botao
   if (INTCON3.INT2IF == 1){  //Interrupt 1s acionada
