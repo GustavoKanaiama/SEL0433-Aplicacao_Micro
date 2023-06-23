@@ -42,3 +42,4 @@ main
 	double2word
 		SETIOV3224
 	Div_16X16_U
+	Mul_16X16_U

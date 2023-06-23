@@ -49,7 +49,7 @@ void main(){
   unsigned int V_ADC = 0;  // var. para leitura da Tensao
   unsigned int T_ADC = 0;  // var. para leitura da Temperatura
   int V_max = 500; // 5.00 V
-  int T_max = 999; // 99.9 ºC
+  int T_max = 999; // 99.9 ï¿½C
   unsigned char Tensao[10];    // arranjo textual para exibir no display
   unsigned char Temp[10];  //vetor do valor da temperatura
 
@@ -61,10 +61,12 @@ void main(){
   ANSELB = 0;  // Configura PORTB como digital (n?o vai usar o m?dulo anal?gico)
   ADC_Init_Advanced(_ADC_INTERNAL_VREFL_ | _ADC_INTERNAL_FVRH1); // Mudar a Referencia para Vref+ 1V
 
-#else     // caso usar outro modelo de PIC18F
+#else     // caso usar outro modelo de PIC18F (PIC18F4550)
+  TRISA.RA0 = 1;
+  TRISA.RA1 = 1;
   TRISA.RA2 = 1;
   TRISA.RA3 = 1;
-  ADCON1 = 0B00001011; //Configura RA0/AN0 e AN1 como ADC no PIC18F4450
+  ADCON1 = 0B00011011; //Configura RA0/AN0 e AN1 como ADC no PIC18F4450
   ADC_Init();
 #endif
 
@@ -77,19 +79,9 @@ void main(){
 
  while(TRUE)
   {
-
-    V_ADC = ADC_Read(2); // fun??o da biblioteca ADC do compilador para
-    T_ADC = ADC_Read(3); //leitura dos valores de 0 a 1023 (10 bits)  - ex.:  valor_ADC = 1023;
-
-
-    // Ajustes de escala dos valores de convers?o para colocar no formato float
-    // de 2 casas ap?s a virgula. Tomando como exemplo valores de 0 a 12.34 para
-    // a escala de 0 a 1023 do conversor:
-
-
+    V_ADC = ADC_Read(0); // fun??o da biblioteca ADC do compilador para
 
     V_ADC = V_ADC * (V_max/1023.); // formata o valor de entrada (neste caso o valor de exemplo '1234')
-    T_ADC = T_ADC * (T_max/1023.); // para 0 a 1023 -> com ponto no final para n? float,i.e.,o display mostrar?: '12.34'
 
     // ------------Formatando para Tensao ------------------
 
@@ -110,6 +102,22 @@ void main(){
     // a partir daqui, n?o ser?o mais exibidos valores, os quais poder?o ser
     //adicionados caso se deseja exibir, por ex., mais casas decimais
 
+
+    Lcd_Out(1, 1, Tensao); // Mostra os valores no display
+
+
+    T_ADC = ADC_Read(1); //leitura dos valores de 0 a 1023 (10 bits)  - ex.:  valor_ADC = 1023;
+
+
+    // Ajustes de escala dos valores de convers?o para colocar no formato float
+    // de 2 casas ap?s a virgula. Tomando como exemplo valores de 0 a 12.34 para
+    // a escala de 0 a 1023 do conversor:
+
+
+    T_ADC = T_ADC * 5 * (T_max/1023.); // para 0 a 1023 -> com ponto no final para n? float,i.e.,o display mostrar?: '12.34'
+
+
+
     //floatToStr(Valor_ADC , Tensao);
     //Tensao[5] = 0;
 
@@ -123,7 +131,7 @@ void main(){
 
 
      // Exibir os valores na config. acima no display LCD:
-    Lcd_Out(1, 1, Tensao); // Mostra os valores no display
+    
     Lcd_Out(2, 1, Temp);
     Delay_ms(20);   // atualizar display
   }

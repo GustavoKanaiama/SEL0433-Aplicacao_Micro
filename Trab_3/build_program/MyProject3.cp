@@ -36,9 +36,11 @@ void main(){
 
 
 
+ TRISA.RA0 = 1;
+ TRISA.RA1 = 1;
  TRISA.RA2 = 1;
  TRISA.RA3 = 1;
- ADCON1 = 0B00001011;
+ ADCON1 = 0B00011011;
  ADC_Init();
 
 
@@ -51,19 +53,9 @@ void main(){
 
  while( 1 )
  {
-
- V_ADC = ADC_Read(2);
- T_ADC = ADC_Read(3);
-
-
-
-
-
-
-
+ V_ADC = ADC_Read(0);
 
  V_ADC = V_ADC * (V_max/1023.);
- T_ADC = T_ADC * (T_max/1023.);
 
 
 
@@ -85,6 +77,22 @@ void main(){
 
 
 
+ Lcd_Out(1, 1, Tensao);
+
+
+ T_ADC = ADC_Read(1);
+
+
+
+
+
+
+
+ T_ADC = T_ADC * 5 * (T_max/1023.);
+
+
+
+
 
 
 
@@ -97,7 +105,7 @@ void main(){
 
 
 
- Lcd_Out(1, 1, Tensao);
+
  Lcd_Out(2, 1, Temp);
  Delay_ms(20);
  }
