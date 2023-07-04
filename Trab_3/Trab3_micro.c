@@ -55,8 +55,8 @@ void main(){
 
 #ifdef P18F45K22 // Lembrando que ANSEL = 1; pois agora o pino deve ser analogico!!!
 
-  TRISA.RA2 = 1; // AN2/RA2 como entrada (canal escolhido para leitura anal?gica)
-  TRISA.RA3 = 1; // AN3/RA3 como entrada (canal escolhido para leitura anal?gica)
+  TRISA.RA0 = 1; // AN0/RA0 como entrada (canal escolhido para leitura anal?gica)
+  TRISA.RA1 = 1; // AN1/RA1 como entrada (canal escolhido para leitura anal?gica)
   ANSELA = 0B00000111;// (somente AN0/RA0 E AN1 como anal?gico)
   ANSELB = 0;  // Configura PORTB como digital (n?o vai usar o m?dulo anal?gico)
   ADC_Init_Advanced(_ADC_INTERNAL_VREFL_ | _ADC_INTERNAL_FVRH1); // Mudar a Referencia para Vref+ 1V
